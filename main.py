@@ -4,10 +4,10 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes, ChatMemberHandler
 
 # --- CONFIGURATION ---
-TOKEN = '8508093915:AAFayqjkjDYXZzHVqjZttsC7FYdEoEa-Buc'
+TOKEN = '8508093915:AAHj907oq1YmCiHfQoaxeaqDSothKpAjXEM'
 OWNER_ID = -7639633018
-ZAPUPI_API_KEY = 'd8c2943122ff97aaf722e87f73bbfd08'
-ZAPUPI_SECRET = '54d6e033843c0c519a9b4f207b606406'
+ZAPUPI_API_KEY = '02d5cd30e3951561c542a2ff1390710f'
+ZAPUPI_SECRET = '13e39d62060cea32ec2d44cba10dafa8'
 PREMIUM_GROUP_ID = -1005162246120
 
 # ലോഗ് ചാനലുകൾ
@@ -175,5 +175,6 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.create_task(run_bot())
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+
 
 
