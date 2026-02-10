@@ -1,20 +1,21 @@
-import os, asyncio, json, uvicorn, hmac, hashlib, threading
+import os, asyncio, json, uvicorn, hmac, hashlib
 from fastapi import FastAPI, Request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes, ChatMemberHandler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
 # --- CONFIGURATION (നേരിട്ട് വാല്യൂസ് നൽകുന്നു) ---
 TOKEN = '8508093915:AAHj907oq1YmCiHfQoaxeaqDSothKpAjXEM'
-OWNER_ID = 7639633018 # ശ്രദ്ധിക്കുക: ഇത് നിങ്ങളുടെ ശരിയായ പോസിറ്റീവ് ഐഡി ആയിരിക്കണം
+OWNER_ID = 7639633018 # നിങ്ങളുടെ @userinfobot-ൽ നിന്നുള്ള ശരിയായ ഐഡി
 ZAPUPI_API_KEY = '02d5cd30e3951561c542a2ff1390710f'
 ZAPUPI_SECRET = '13e39d62060cea32ec2d44cba10dafa8'
 PREMIUM_GROUP_ID = -1005162246120
 
+# ലോഗ് ചാനലുകൾ
 PAYMENT_LOG_ID = -1005235631263
 ACTIVITY_LOG_ID = -1003612737572
 DATABASE_CHANNEL = -1005269535383
 
-# FastAPI & Bot Setup
+# FastAPI App
 app = FastAPI()
 bot_instance = Bot(token=TOKEN)
 
@@ -22,10 +23,8 @@ bot_instance = Bot(token=TOKEN)
 data = {
     "products": {}, 
     "support_user": "@admin",
-    "welcome_text": "Mallu-ലേക്ക് സ്വാഗതം! Anyone who wants this Mallu product, DM me as soon as possible.",
-    "welcome_photo": None,
-    "broadcast_msg": "Join our premium group now!",
-    "active_groups": []
+    "welcome_text": "Mallu-ലേക്ക് സ്വാഗതം!",
+    "welcome_photo": None
 }
 
 # --- WEBHOOK ---
@@ -45,7 +44,7 @@ async def zapupi_webhook(request: Request):
                 except: pass
     return {"status": "ok"}
 
-# --- HANDLERS ---
+# --- BOT HANDLERS ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = []
     for pid, pinfo in data["products"].items():
@@ -72,23 +71,27 @@ async def handle_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pay_url = f"https://zapupi.com/pay?api={ZAPUPI_API_KEY}&amount={p['price']}&external_id={update.effective_user.id}"
             await query.edit_message_text(f"🛍 {p['name']}\n💰 ₹{p['price']}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Pay Now", url=pay_url)]]))
 
-# --- RUNNERS ---
-def run_bot():
-    """ബോട്ട് റൺ ചെയ്യുന്ന ഫങ്ക്ഷൻ"""
-    application = Application.builder().token(TOKEN).build()
+# --- APP LIFECYCLE ---
+application = Application.builder().token(TOKEN).build()
+
+@app.on_event("startup")
+async def startup_event():
+    # ബോട്ട് ഹാൻഡ്‌ലറുകൾ ആഡ് ചെയ്യുന്നു
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("addproduct", add_product))
     application.add_handler(CallbackQueryHandler(handle_click))
     
-    print("Bot is starting...")
-    application.run_polling(drop_pending_updates=True)
+    # ബോട്ട് സ്റ്റാർട്ട് ചെയ്യുന്നു
+    await application.initialize()
+    await application.start()
+    await application.updater.start_polling(drop_pending_updates=True)
+    print("Bot and Webhook are running...")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await application.updater.stop()
+    await application.stop()
+    await application.shutdown()
 
 if __name__ == "__main__":
-    # ബോട്ടിൽ ഒരു പ്രത്യേക ത്രെഡിൽ തുടങ്ങുന്നു
-    bot_thread = threading.Thread(target=run_bot, daemon=True)
-    bot_thread.start()
-    
-    # മെയിൻ ത്രെഡിൽ FastAPI സെർവർ റൺ ചെയ്യുന്നു
-    print("Web server is starting...")
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
-
