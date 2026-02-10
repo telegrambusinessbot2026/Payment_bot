@@ -5,7 +5,7 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 
 # --- CONFIGURATION (നേരിട്ട് വാല്യൂസ് നൽകുന്നു) ---
 TOKEN = '8508093915:AAHj907oq1YmCiHfQoaxeaqDSothKpAjXEM'
-OWNER_ID = 8508093915 # ശ്രദ്ധിക്കുക: ഇത് നിങ്ങളുടെ ശരിയായ പോസിറ്റീവ് ഐഡി ആയിരിക്കണം
+OWNER_ID = 7639633018 # ശ്രദ്ധിക്കുക: ഇത് നിങ്ങളുടെ ശരിയായ പോസിറ്റീവ് ഐഡി ആയിരിക്കണം
 ZAPUPI_API_KEY = '02d5cd30e3951561c542a2ff1390710f'
 ZAPUPI_SECRET = '13e39d62060cea32ec2d44cba10dafa8'
 PREMIUM_GROUP_ID = -1005162246120
@@ -91,3 +91,4 @@ if __name__ == "__main__":
     # മെയിൻ ത്രെഡിൽ FastAPI സെർവർ റൺ ചെയ്യുന്നു
     print("Web server is starting...")
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+
