@@ -159,8 +159,9 @@ async def run_bot():
     
     async def track(update, context):
         if update.my_chat_member and update.my_chat_member.new_chat_member.status in ["member", "administrator"]:
-            data["active_groups"].append(update.my_chat_member.chat.id)
-            await update_db(context)
+            if update.my_chat_member.chat.id not in data["active_groups"]:
+                data["active_groups"].append(update.my_chat_member.chat.id)
+                await update_db(context)
     app_bot.add_handler(ChatMemberHandler(track))
 
     await app_bot.initialize()
@@ -168,14 +169,24 @@ async def run_bot():
     await app_bot.updater.start_polling()
     
     # സ്റ്റാർട്ടപ്പ് മെസ്സേജ് ഡാറ്റാബേസിൽ
-    await app_bot.bot.send_message(chat_id=DATABASE_CHANNEL, text=f"🤖 **Bot Online with Secret Verification!**\n{HELP_TEXT}")
+    try:
+        await app_bot.bot.send_message(chat_id=DATABASE_CHANNEL, text=f"🤖 **Bot Online with Secret Verification!**\n{HELP_TEXT}")
+    except: pass
+    
     asyncio.create_task(auto_broadcast_task(app_bot))
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.create_task(run_bot())
+    # FastAPI സെർവർ റൺ ചെയ്യുന്നു
+    import threading
+    
+    def start_bot():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(run_bot())
+        loop.run_forever()
+
+    # ബോട്ടിനെ ഒരു വെവ്വേറെ ത്രെഡിൽ തുടങ്ങുന്നു
+    threading.Thread(target=start_bot, daemon=True).start()
+    
+    # മെയിൻ ത്രെഡിൽ FastAPI സെർവർ റൺ ചെയ്യുന്നു
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
-
-
-
-
