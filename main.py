@@ -3,17 +3,17 @@ from fastapi import FastAPI, Request, Header
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes, ChatMemberHandler
 
-# --- CONFIGURATION (Environment Variables) ---
-TOKEN = os.getenv('8508093915:AAFAyqjKjDYXZzHVqjZttsC7FYdEoEa-Buc')
-OWNER_ID = int(os.getenv('-7639633018', '0'))
-ZAPUPI_API_KEY = os.getenv('d8c2943122ff97aaf722e87f73bbfd08')
-ZAPUPI_SECRET = os.getenv('54d6e033843c0c519a9b4f207b606406') # Zapupi Secret Key
-PREMIUM_GROUP_ID = int(os.getenv('-1005162246120', '0'))
+# --- CONFIGURATION ---
+TOKEN = '8508093915:AAFayqjkjDYXZzHVqjZttsC7FYdEoEa-Buc'
+OWNER_ID = -7639633018
+ZAPUPI_API_KEY = 'd8c2943122ff97aaf722e87f73bbfd08'
+ZAPUPI_SECRET = '54d6e033843c0c519a9b4f207b606406'
+PREMIUM_GROUP_ID = -1005162246120
 
 # ലോഗ് ചാനലുകൾ
-PAYMENT_LOG_ID = int(os.getenv('-1005235631263', '0'))
-ACTIVITY_LOG_ID = int(os.getenv('-1003612737572', '0'))
-DATABASE_CHANNEL = int(os.getenv('-1005269535383', '0'))
+PAYMENT_LOG_ID = -1005235631263
+ACTIVITY_LOG_ID = -1003612737572
+DATABASE_CHANNEL = -1005269535383
 
 # FastAPI & Bot Setup
 app = FastAPI()
@@ -175,4 +175,5 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.create_task(run_bot())
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+
 
