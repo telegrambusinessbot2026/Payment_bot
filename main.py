@@ -25,7 +25,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 OWNER_ID = int(os.getenv("OWNER_ID"))
 ZAPUPI_API_KEY = os.getenv("ZAPUPI_API_KEY")
 ZAPUPI_SECRET = os.getenv("ZAPUPI_SECRET")
-PAID_GROUP_ID = int(os.getenv("-1003773522369"))
+PAID_GROUP_ID = int(os.getenv("PAID_GROUP_ID", "-1003773522369"))
 LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID"))
 RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL")
 
