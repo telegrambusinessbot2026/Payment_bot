@@ -1,37 +1,34 @@
-```python
 import logging
 import os
 import asyncio
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
-from io import BytesIO
 import traceback
 
 from dotenv import load_dotenv
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot, ChatInviteLink
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application, CommandHandler, MessageHandler, CallbackQueryHandler,
     ConversationHandler, filters, ContextTypes, ChatMemberHandler
 )
-from telegram.error import TelegramError, BadRequest
-import aiohttp
+from telegram.error import TelegramError
 import httpx
 
-# Load environment variables
 load_dotenv()
 
-# Environment variables
+# Environment variables - NO HARDCODED VALUES!
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-OWNER_ID = int(os.getenv("OWNER_ID"))
-ZAPUPI_API_KEY = os.getenv("ZAPUPI_API_KEY")
-ZAPUPI_SECRET = os.getenv("ZAPUPI_SECRET")
-PAID_GROUP_ID = int(os.getenv("PAID_GROUP_ID", "-1003773522369"))
-LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID"))
-RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL")
+OWNER_ID = int(os.getenv("OWNER_ID", 0))
+ZAPUPI_API_KEY = os.getenv("ZAPUPI_API_KEY", "")
+ZAPUPI_SECRET = os.getenv("ZAPUPI_SECRET", "")
+PAID_GROUP_ID = int(os.getenv("PAID_GROUP_ID", 0))
+LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", 0))
+RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "")
 
-# Conversation states
-ADD_PRODUCT, ADD_PRODUCT_IMAGE, ADD_PRODUCT_PRICE, ADD_PRODUCT_DESC = range(4)
-PAYMENT_VERIFICATION = 0
+# Validate required env vars
+if not all([BOT_TOKEN, str(OWNER_ID).isdigit()]):
+    print("❌ Missing required env vars: BOT_TOKEN, OWNER_ID")
+    exit(1)
 
 # Logging setup
 logging.basicConfig(
